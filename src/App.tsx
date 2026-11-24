@@ -1,6 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { ArrowDown, ArrowRight, ArrowUpRight, Check, Code2, Github, Linkedin, Menu, X, Zap } from 'lucide-react'
+import { AnimatePresence, motion, useReducedMotion, type MotionStyle } from 'framer-motion'
+import { ArrowDown, ArrowRight, ArrowUpRight, Check, Code2, Github, Linkedin, Menu, X } from 'lucide-react'
 import { config } from './lib/config'
 import { projects } from './data/projects'
 import { skills } from './data/skills'
@@ -8,7 +8,7 @@ import { experience } from './data/experience'
 import { services } from './data/services'
 import type { Project } from './types'
 
-const RobotScene = lazy(() => import('./components/3d/RobotScene'))
+const RobotScene = lazy(() => import('./components/three/RobotScene'))
 const nav = ['ABOUT','SKILLS','PROJECTS','EXPERIENCE','SERVICES','GITHUB','CONTACT']
 const reveal = { hidden: { opacity: 0, y: 22 }, show: { opacity: 1, y: 0, transition: { duration: .6 } } }
 const placeholder = (value?: string) => !value || value.startsWith('ADD_')
@@ -30,7 +30,7 @@ function App() {
   }, [])
 
   const scrollTo = (id: string) => { setMobileOpen(false); document.getElementById(id.toLowerCase())?.scrollIntoView({ behavior: reduceMotion ? 'instant' : 'smooth' }) }
-  const external = (href: string, label: string) => placeholder(href) ? <span className="link-placeholder" title={`${label} link not configured`}>Link not configured</span> : <a href={href} target="_blank" rel="noreferrer" aria-label={label}>{label}<ArrowUpRight size={14}/></a>
+  const external = (href: string | undefined, label: string) => placeholder(href) ? <span className="link-placeholder" title={`${label} link not configured`}>Link not configured</span> : <a href={href} target="_blank" rel="noreferrer" aria-label={label}>{label}<ArrowUpRight size={14}/></a>
 
   function sendMessage(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -70,7 +70,7 @@ function App() {
 
       <section id="skills" className="section-shell content-section"><div className="section-heading"><p className="eyebrow">02 / TOOLKIT</p><h2>Systems I <span className="gradient-text">build with.</span></h2><p className="section-intro">A connected toolkit, selected to solve product problems—not to fill a checklist.</p></div><div className="skill-layout"><div className="skill-categories">{[...new Set(skills.map(s=>s[0]))].map(category=><span key={category}>{category}</span>)}</div><div className="skill-matrix">{skills.map(([category,name,description],i)=><button key={name} onMouseEnter={()=>setSkill(name)} onFocus={()=>setSkill(name)} onClick={()=>setSkill(name)} className={`skill-node ${skill===name?'selected':''}`} style={{'--node':i} as React.CSSProperties}><span className="node-dot"/><span>{name}</span><small>{category}</small>{skill===name&&<span className="skill-tip">{description}</span>}</button>)}</div></div></section>
 
-      <section id="projects" className="section-shell content-section"><div className="section-heading heading-inline"><div><p className="eyebrow">03 / SELECTED WORK</p><h2>Products with <span className="gradient-text">purpose.</span></h2></div><span className="section-count">01 — 05 / 05</span></div><div className="project-grid">{projects.map((project,index)=><motion.button key={project.name} className="project-card" onClick={()=>setSelected(project)} whileHover={reduceMotion?undefined:{y:-6}} initial={reduceMotion?false:'hidden'} whileInView="show" viewport={{once:true,amount:.15}} variants={reveal} style={{'--accent':project.accent} as React.CSSProperties}><div className="project-top"><span>{String(index+1).padStart(2,'0')} / {project.category}</span><ArrowUpRight size={17}/></div><div className="project-art" aria-hidden="true"><div className="art-orbit orbit-a"/><div className="art-orbit orbit-b"/><div className="art-core"><Code2 size={26}/></div><span className="art-corner">{project.technologies[0]}</span></div><h3>{project.name}</h3><p>{project.description}</p><div className="tag-row">{project.technologies.map(tech=><span key={tech}>{tech}</span>)}</div><div className="project-more">VIEW CASE STUDY <ArrowRight size={14}/></div></motion.button>)}</div></section>
+      <section id="projects" className="section-shell content-section"><div className="section-heading heading-inline"><div><p className="eyebrow">03 / SELECTED WORK</p><h2>Products with <span className="gradient-text">purpose.</span></h2></div><span className="section-count">01 — 05 / 05</span></div><div className="project-grid">{projects.map((project,index)=><motion.button key={project.name} className="project-card" onClick={()=>setSelected(project)} whileHover={reduceMotion?undefined:{y:-6}} initial={reduceMotion?false:'hidden'} whileInView="show" viewport={{once:true,amount:.15}} variants={reveal} style={{ '--accent': project.accent } as MotionStyle}><div className="project-top"><span>{String(index+1).padStart(2,'0')} / {project.category}</span><ArrowUpRight size={17}/></div><div className="project-art" aria-hidden="true"><div className="art-orbit orbit-a"/><div className="art-orbit orbit-b"/><div className="art-core"><Code2 size={26}/></div><span className="art-corner">{project.technologies[0]}</span></div><h3>{project.name}</h3><p>{project.description}</p><div className="tag-row">{project.technologies.map(tech=><span key={tech}>{tech}</span>)}</div><div className="project-more">VIEW CASE STUDY <ArrowRight size={14}/></div></motion.button>)}</div></section>
 
       <section id="experience" className="section-shell content-section"><div className="section-heading"><p className="eyebrow">04 / EXPERIENCE</p><h2>Where I’ve <span className="gradient-text">contributed.</span></h2><p className="section-intro">Professional experience across product teams. Exact dates and role details can be added when confirmed.</p></div><div className="timeline">{experience.map((job,i)=><div className="timeline-item" key={job.company}><div className="timeline-marker">0{i+1}</div><div className="timeline-body"><div className="timeline-heading"><div><h3>{job.company}</h3><span>{job.role}</span></div><time>{job.duration}</time></div><p>{job.responsibilities[0]}. Focused on building and supporting real-world software products.</p><div className="tag-row">{job.technologies.map(t=><span key={t}>{t}</span>)}</div></div></div>)}</div></section>
 
